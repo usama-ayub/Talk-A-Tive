@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 // import { useHistory } from "react-router";
-//   import Login from "../components/Authentication/Login";
-//   import Signup from "../components/Authentication/Signup";
+  import Login from "../components/Login";
+  import Signup from "../components/Signup";
 
 function HomePage() {
   // const history = useHistory();
@@ -46,12 +46,10 @@ function HomePage() {
           </TabList>
           <TabPanels>
             <TabPanel>
-              Login
-              {/* <Login /> */}
+              <Login />
             </TabPanel>
             <TabPanel>
-              Signup
-              {/* <Signup /> */}
+              <Signup />
             </TabPanel>
           </TabPanels>
         </Tabs>
