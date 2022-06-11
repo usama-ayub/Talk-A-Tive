@@ -8,10 +8,73 @@ import { ChatState } from "../context/ChatProvider";
 import { getSender, getSenderFull } from "../config/helper";
 import ProfileModal from "./modal/Profile";
 import UpdateGroupChatModal from "./modal/UpdateGroupChat";
+import { axiosClient } from "../config/axios";
+import ScrollableMessage from "./ScrollableMessage";
 
 const SingleChat = () => {
+    const toast = useToast();
+    const [messages, setMessages] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [newMessage, setNewMessage] = useState("");
+
   const { selectedChat, setSelectedChat, user, notification, setNotification } =
     ChatState();
+    const sendMessage = async (event) => {
+        if (event.key === "Enter" && newMessage) {
+        //   socket.emit("stop typing", selectedChat._id);
+          try {
+            setNewMessage("");
+            const { data } = await axiosClient.post(
+              "message",
+              {
+                content: newMessage,
+                chat_id: selectedChat,
+              }
+            );
+            // socket.emit("new message", data);
+            setMessages([...messages, data]);
+          } catch (error) {
+            toast({
+              title: "Error Occured!",
+              description: "Failed to send the Message",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+              position: "bottom",
+            });
+          }
+        }
+      };
+      const fetchMessages = async () => {
+        if (!selectedChat) return;
+    
+        try {
+          setLoading(true);
+          const { data } = await axiosClient.get(
+            `message/${selectedChat._id}`
+          );
+          setMessages(data);
+          setLoading(false);
+    
+        //   socket.emit("join chat", selectedChat._id);
+        } catch (error) {
+          toast({
+            title: "Error Occured!",
+            description: "Failed to Load the Messages",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        }
+      };
+      const typingHandler = (e) => {
+        setNewMessage(e.target.value);
+      }
+      useEffect(() => {
+        fetchMessages();
+        // selectedChatCompare = selectedChat;
+      }, [selectedChat]);
   return (
     <>
       {selectedChat ? (
@@ -52,7 +115,47 @@ const SingleChat = () => {
             h="100%"
             borderRadius="lg"
             overflowY="hidden"
-          ></Box>
+          >
+            {loading ? (
+              <Spinner
+                size="xl"
+                w={20}
+                h={20}
+                alignSelf="center"
+                margin="auto"
+              />
+            ) : (
+              <div className="messages">
+                <ScrollableMessage messages={messages} />
+              </div>
+            )}
+            <FormControl
+              onKeyDown={sendMessage}
+              id="first-name"
+              isRequired
+              mt={3}
+            >
+              {/* {istyping ? (
+                <div>
+                  <Lottie
+                    options={defaultOptions}
+                    // height={50}
+                    width={70}
+                    style={{ marginBottom: 15, marginLeft: 0 }}
+                  />
+                </div>
+              ) : (
+                <></>
+              )} */}
+              <Input
+                variant="filled"
+                bg="#E0E0E0"
+                placeholder="Enter a message.."
+                value={newMessage}
+                onChange={typingHandler}
+              />
+            </FormControl>
+          </Box>
         </>
       ) : (
         <Box
