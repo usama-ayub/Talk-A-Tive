@@ -55,23 +55,15 @@ router.post('/create',[authMiddleware], async (req, res) => {
 
 router.get('/',[authMiddleware], async (req, res) => {
     try {
-        // Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
-        //   .populate("users", "-password")
-        //   .populate("group_admin", "-password")
-        //   .populate("latest_message")
-        //   .sort({ updatedAt: -1 })
-        //   .then(async (results) => {
-        //     results = await User.populate(results, {
-        //       path: "latest_message.sender",
-        //       select: "name pic email",
-        //     });
-        //     res.status(200).send(results);
-        //   });
-        const chat = await Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+        let chat = await Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
           .populate("users", "-password -is_admin")
           .populate("group_admin", "-password")
           .populate("latest_message")
           .sort({ updatedAt: -1 })
+          chat = await User.populate(chat, {
+            path: "latest_message.sender",
+            select: "name profile_image email",
+        });
         res.status(200).send(chat);
       } catch (error) {
         res.status(400);

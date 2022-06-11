@@ -105,7 +105,7 @@ function MyChats() {
                         <b>{chat.latest_message.sender.name} : </b>
                         {chat.latest_message.content.length > 50
                           ? chat.latest_message.content.substring(0, 51) + "..."
-                          : chat.latestMessage.content}
+                          : chat.latest_message.content}
                       </Text>
                     )}
                   </Box>
