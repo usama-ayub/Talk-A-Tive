@@ -5,14 +5,17 @@ import { BrowserRouter } from "react-router-dom";
 
 // import './index.css';
 import App from './App';
+import ChatProvider from './context/ChatProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ChakraProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ChakraProvider>
+    <BrowserRouter>
+      <ChatProvider>
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      </ChatProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

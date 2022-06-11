@@ -6,4 +6,14 @@ const generateToken = (id) => {
   });
 };
 
-module.exports = {generateToken};
+const makeReponse = (valid, data, message, extra = {}) => {
+  return {
+      valid: valid,
+      data: valid ? data : [],
+      errors: !valid ? data : [],
+      message: message || '',
+      ...extra
+  }
+}
+
+module.exports = {generateToken,makeReponse};

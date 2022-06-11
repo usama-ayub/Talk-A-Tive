@@ -15,8 +15,8 @@ router.post('/login', async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
-      pic: user.pic,
+      is_admin: user.is_admin,
+      profile_image: user.profile_image,
       token: generateToken(user._id),
     });
   } else {

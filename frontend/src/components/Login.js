@@ -4,8 +4,8 @@ import { Input, InputGroup, InputRightElement } from "@chakra-ui/input";
 import { VStack } from "@chakra-ui/layout";
 import { useState } from "react";
 import { useToast } from "@chakra-ui/react";
-import { axiosClient } from "../config/axios";
 import { useNavigate } from "react-router-dom";
+import { axiosClient } from "../config/axios";
 
 const Login = () => {
     const [show, setShow] = useState(false);
@@ -44,6 +44,7 @@ const Login = () => {
             position: "bottom",
           });
           localStorage.setItem("userInfo", JSON.stringify(data));
+          localStorage.setItem("token", JSON.stringify(data).token);
           setLoading(false);
           navigate("/chats");
         } catch (error) {

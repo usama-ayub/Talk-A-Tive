@@ -8,9 +8,9 @@ const router = express.Router();
 
 // Single Chat
 router.post('/create',[authMiddleware], async (req, res) => {
-    const { userId } = req.body;
+    const { user_id } = req.body;
 
-  if (!userId) {
+  if (!user_id) {
     console.log("UserId param not sent with request");
     return res.sendStatus(400);
   }
@@ -19,7 +19,7 @@ router.post('/create',[authMiddleware], async (req, res) => {
     is_group_chat: false,
     $and: [
       { users: { $elemMatch: { $eq: req.user._id } } }, // login user
-      { users: { $elemMatch: { $eq: userId } } },
+      { users: { $elemMatch: { $eq: user_id } } },
     ],
   })
     .populate("users", "-password")
@@ -36,7 +36,7 @@ router.post('/create',[authMiddleware], async (req, res) => {
     var chatData = {
       chatName: "sender",
       isGroupChat: false,
-      users: [req.user._id, userId],
+      users: [req.user._id, user_id],
     };
 
     try {
@@ -62,7 +62,7 @@ router.get('/',[authMiddleware], async (req, res) => {
         //   .sort({ updatedAt: -1 })
         //   .then(async (results) => {
         //     results = await User.populate(results, {
-        //       path: "latestMessage.sender",
+        //       path: "latest_message.sender",
         //       select: "name pic email",
         //     });
         //     res.status(200).send(results);
