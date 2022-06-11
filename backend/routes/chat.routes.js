@@ -81,8 +81,8 @@ router.get('/',[authMiddleware], async (req, res) => {
 
 
 // Group Chat
-router.post('/group', async (req, res) => {
-    const {members,name,user} = req.body;
+router.post('/group',[authMiddleware], async (req, res) => {
+    const {members,name} = req.body;
     if (!members || !name) {
         return res.status(400).send({ message: "Please Fill all the feilds" });
       }
@@ -95,19 +95,19 @@ router.post('/group', async (req, res) => {
           .send("More than 2 member are required to form a group chat");
       }
     
-      groupMember.push(user); // login user also add
+      groupMember.push(req.user._id); // login user also add
     
       try {
         const groupChat = await Chat.create({
-          chatName: name,
+          chat_name: name,
           users: groupMember,
-          isGroupChat: true,
-          groupAdmin: user,
+          is_group_chat: true,
+          group_admin: req.user._id,
         });
     
         const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
           .populate("users", "-password -is_admin")
-          .populate("groupAdmin", "-password -is_admin");
+          .populate("group_admin", "-password -is_admin");
     
         res.status(200).json(fullGroupChat);
       } catch (error) {
@@ -118,16 +118,77 @@ router.post('/group', async (req, res) => {
 
 // rename group
 router.put('/group/rename', async (req, res) => {
- 
+  const { chat_id, chat_name } = req.body;
+
+  const updatedChat = await Chat.findByIdAndUpdate(
+    chat_id,
+    {
+      chat_name: chat_name,
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("users", "-password")
+    .populate("group_admin", "-password");
+
+  if (!updatedChat) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  } else {
+    res.json(updatedChat);
+  }
 });
 
 // remove someone from group
 router.put('/group/remove', async (req, res) => {
- 
+  const { chat_id, user_id } = req.body;
+
+  // check if the requester is admin
+
+  const removed = await Chat.findByIdAndUpdate(
+    chat_id,
+    {
+      $pull: { users: user_id },
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("users", "-password")
+    .populate("group_admin", "-password");
+
+  if (!removed) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  } else {
+    res.json(removed);
+  }
 });
 
 // add someone from group
 router.put('/group/add', async (req, res) => {
- 
+  const { chat_id, user_id } = req.body;
+
+  // check if the requester is admin
+
+  const added = await Chat.findByIdAndUpdate(
+    chat_id,
+    {
+      $push: { users: user_id },
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password");
+
+  if (!added) {
+    res.status(404);
+    throw new Error("Chat Not Found");
+  } else {
+    res.json(added);
+  }
 });
 module.exports = router;
