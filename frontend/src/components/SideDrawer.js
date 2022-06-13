@@ -22,11 +22,14 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Spinner, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import NotificationBadge from "react-notification-badge";
+import { Effect } from "react-notification-badge";
 import { ChatState } from "../context/ChatProvider";
 import ProfileModal from "./modal/Profile";
 import { axiosClient } from "../config/axios";
 import ChatSkeleton from "./ChatSkeleton";
 import UserListItem from "./UserListItem";
+import { getSender } from "../config/helper";
 
 function SideDrawer() {
     const [search, setSearch] = useState("");
@@ -128,14 +131,14 @@ function SideDrawer() {
         <div>
           <Menu>
             <MenuButton p={1}>
-              {/* <NotificationBadge
+              <NotificationBadge
                 count={notification.length}
                 effect={Effect.SCALE}
-              /> */}
+              />
               <BellIcon fontSize="2xl" m={1} />
             </MenuButton>
             <MenuList pl={2}>
-              {/* {!notification.length && "No New Messages"}
+              {!notification.length && "No New Messages"}
               {notification.map((notif) => (
                 <MenuItem
                   key={notif._id}
@@ -148,7 +151,7 @@ function SideDrawer() {
                     ? `New Message in ${notif.chat.chatName}`
                     : `New Message from ${getSender(user, notif.chat.users)}`}
                 </MenuItem>
-              ))} */}
+              ))}
             </MenuList>
           </Menu>
           <Menu>
